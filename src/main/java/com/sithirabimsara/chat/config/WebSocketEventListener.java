@@ -25,11 +25,36 @@ public class WebSocketEventListener {
         if(username != null) {
             log.info("User Disconnected : {}" , username);
 
+            // notify the public about the disconnection
             var chatMessage = ChatMessage.builder()
                     .type(MessageType.LEAVE)
                     .sender(username)
                     .build();
             messageTemplate.convertAndSend("/topic/public", chatMessage);
         }
+
+        // Handle private chat disconnection
+        // Assuming you have some way to track active private chats
+        String recipient = (String) headerAccessor.getSessionAttributes().get("recipient"); // Example tracking
+        if (recipient != null) {
+            var privateChatMessage = ChatMessage.builder()
+                    .type(MessageType.LEAVE)
+                    .sender(username)
+                    .build();
+            messageTemplate.convertAndSendToUser(recipient, "/queue/private", privateChatMessage);
+        }
+
+        // Handle group chat disconnection
+        // Assuming you have some way to track which group the user was in
+        String groupName = (String) headerAccessor.getSessionAttributes().get("groupName"); // Example tracking
+        if (groupName != null) {
+            var groupChatMessage = ChatMessage.builder()
+                    .type(MessageType.LEAVE)
+                    .sender(username)
+                    .groupName(groupName)
+                    .build();
+            messageTemplate.convertAndSend("/topic/group/" + groupName, groupChatMessage);
+        }
     }
 }
+
