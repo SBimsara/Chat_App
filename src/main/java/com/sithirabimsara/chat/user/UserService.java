@@ -1,15 +1,18 @@
 package com.sithirabimsara.chat.user;
 
+import org.springframework.stereotype.Service;
+
 import java.util.List;
 
+@Service
 public class UserService {
 
     private UserRepo userRepo;
 
     // Save user to database
-    public void saveUser(User user) {
+    public User saveUser(User user) {
         user.setStatus(Status.ONLINE);
-        userRepo.save(user);
+        return userRepo.save(user);
     }
 
     public void deleteUser(User user) {
@@ -26,10 +29,10 @@ public class UserService {
     }
 
     // Disconnect user from chat
-    public void disconnectUser(User user) {
+    public User disconnectUser(User user) {
         User exitingUser = userRepo.findById(user.getId()).orElseThrow(() -> new RuntimeException("User not found"));
         exitingUser.setStatus(Status.OFFLINE);
-        userRepo.save(exitingUser);
+        return userRepo.save(exitingUser);
 
     }
 
