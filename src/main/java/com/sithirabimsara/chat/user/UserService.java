@@ -19,9 +19,8 @@ public class UserService {
         // Delete user from database
     }
 
-    public User getUser(String id) {
-        // Get user from database
-        return null;
+    public User getUser(Long id) {
+        return userRepo.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     public void updateUser(User user) {
